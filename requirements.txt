@@ -1,0 +1,8 @@
+venom==1.0.0a4
+requests
+codecov
+aiohttp
+nose
+gunicorn
+six
+py2neo
