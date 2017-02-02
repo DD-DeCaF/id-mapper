@@ -6,3 +6,4 @@ nose
 gunicorn
 six
 py2neo
+pytest-cov==2.4.0

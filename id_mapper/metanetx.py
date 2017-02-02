@@ -19,7 +19,6 @@ def load_xrefs(filename):
     """
     Download Metanetx cross-references files and generate references iterables
     """
-    c = 0
     response = requests.get((METANETX_URL + '/{}.tsv').format(filename))
     response.raise_for_status()
     for line in response.iter_lines(decode_unicode=response.encoding):
@@ -28,6 +27,3 @@ def load_xrefs(filename):
         x, y = make_pairs(line)
         if x.metabolite != y.metabolite:
             yield x, y
-            c += 1
-            if c == 5:
-                break
