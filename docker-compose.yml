@@ -5,6 +5,8 @@ db:
     - 7687:7687
   volumes:
     - 'cleandb:/data'
+  environment:
+    - NEO4J_AUTH=neo4j/1
 web:
   build: .
   dockerfile: Dockerfile
