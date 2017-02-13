@@ -4,7 +4,7 @@ db:
     - 7474:7474
     - 7687:7687
   volumes:
-    - 'cleandb:/data'
+    - '/Users/svegal/neo4j_backup:/data'
   environment:
     - NEO4J_AUTH=neo4j/1
 web:

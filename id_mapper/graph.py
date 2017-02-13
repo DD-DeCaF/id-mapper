@@ -20,23 +20,22 @@ class NoSuchNode(Exception):
         )
 
 
-def insert_pairs(graph, label, pair1, pair2):
+def insert_pairs(graph, label, pair1, pair2, organism=None):
     """Merge nodes to database and create mutual IS relationships between
 
     :param graph: Graph
     :param label: "Metabolite" or "Reaction"
     :param pair1: node 1
     :param pair2: node 2
+    :param organism: str
     :return:
     """
-    nodes = [
-        Node(
-            label,
-            id=pair.metabolite,
-            db_name=pair.database
-        )
-        for pair in (pair1, pair2)
-        ]
+    nodes = []
+    for pair in (pair1, pair2):
+        kwargs = dict(id=pair.metabolite, db_name=pair.database)
+        if organism:
+            kwargs['organism'] = organism
+        nodes.append(Node(label, **kwargs))
     for n in nodes:
         graph.merge(n)
     graph.merge(Is(nodes[0], nodes[1]))
@@ -55,7 +54,7 @@ def find_match(graph, object_id, db_from, db_to):
     selector = NodeSelector(graph)
     result = []
     found = False
-    for labels in ('Metabolite', 'Reaction'):
+    for labels in ('Metabolite', 'Reaction', 'Gene'):
         selected = list(selector.select(labels, id=object_id, db_name=db_from))
         assert len(selected) <= 1
         if selected:

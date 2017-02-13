@@ -11,7 +11,7 @@ def make_pairs(line):
     ready to be uploaded to the graph database
     """
     xref, metanetx_id = line.split()[:2]
-    xref_db, xref_id = xref.split(':')
+    xref_db, xref_id = xref.split(':', maxsplit=1)
     return Pair(xref_id, xref_db), Pair(metanetx_id, 'mnx')
 
 
