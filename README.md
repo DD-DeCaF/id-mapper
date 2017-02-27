@@ -32,3 +32,7 @@ Content-Type: application/json
 
 The graph consists of large amount of connected components. A connected component is considered being one object: a metabolite or a reaction. Search is returning all the elements in the component with `db_to` database name.
 ![graph](graph.png)
+
+# LICENSE
+
+id-mapper is licensed under the Apache License Version 2.0 (see LICENSE in source directory).
