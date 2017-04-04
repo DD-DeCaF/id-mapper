@@ -14,15 +14,12 @@
 # limitations under the License.
 
 import os
-import pytest
-from py2neo import Graph, NodeSelector
-from id_mapper.graph import insert_pairs, find_match, collect_matches, \
-    NoSuchNode
+from py2neo import Graph
+from id_mapper.graph import insert_pairs, query_identifiers
 from id_mapper.metanetx import Pair
 
 
-graph = Graph(host=os.environ['DB_PORT_7687_TCP_ADDR'],
-              password='1')
+graph = Graph(host=os.environ['DB_PORT_7687_TCP_ADDR'], password='1')
 
 
 elements = [
@@ -42,10 +39,6 @@ def test_insert_pairs():
     insert_pairs(graph, 'Metabolite', *elements[2])
     assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 4
     assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 6
-    assert find_match(graph, 'C', 'z', 'y') == ['B']
-    with pytest.raises(NoSuchNode):
-        find_match(graph, 'N', 'z', 'y')
-    selector = NodeSelector(graph)
-    A = list(selector.select('Metabolite', id='A', db_name='x'))[0]
-    assert set(collect_matches(graph, A, 'z')) == {'B', 'C'}
+    assert query_identifiers(graph, 'Metabolite', 'C', 'z', 'y')['C'] == ['B']
+    assert 'B' not in query_identifiers(graph, 'Metabolite', 'N', 'z', 'y')
     graph.delete_all()

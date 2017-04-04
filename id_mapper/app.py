@@ -21,34 +21,31 @@ from venom.rpc import Service, Venom
 from venom.rpc.comms.aiohttp import create_app
 from venom.rpc.method import http
 from venom.rpc.reflect.service import ReflectService
-from venom.exceptions import NotFound
-
-from id_mapper.stubs import QueryRequest, QueryResponse
-from id_mapper.graph import find_match, NoSuchNode
 
 
-class IDMapping(Service):
-    @http.GET(
+from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
+from id_mapper.graph import query_identifiers
+
+
+class IdMapping(Service):
+    graph = Graph("{}:{}".format(os.environ['ID_MAPPER_API'], os.environ['ID_MAPPER_PORT']),
+                  password=os.environ['ID_MAPPER_PASSWORD'])
+
+    @http.POST(
         './query',
-        description='Query entity by id and database name to get '
-                    'all the matching IDs from another database'
+        description='Query entity by list of identifiers and a database name to get '
+                    'all the matching identifiers from another database'
     )
-    def query(self, request: QueryRequest) -> QueryResponse:
-        graph = Graph(
-            host=os.environ['DB_PORT_7687_TCP_ADDR'],
-            password=os.environ['NEO4J_PASSWORD']
-        )
-        try:
-            return QueryResponse(ids=find_match(
-                graph, request.id, request.db_from, request.db_to
-            ))
-        except NoSuchNode as e:
-            raise NotFound(str(e))
+    def query(self, request: IdMapperQueryRequest) -> IdMapperQueryResponse:
+        return IdMapperQueryResponse(ids=query_identifiers(
+            self.graph, object_type=request.type, object_ids=list(request.ids),
+            db_from=request.db_from, db_to=request.db_to
+        ))
+
 
 venom = Venom()
-venom.add(IDMapping)
+venom.add(IdMapping)
 venom.add(ReflectService)
-
 
 app = create_app(venom)
 
