@@ -23,7 +23,7 @@ from multiprocessing import Pool
 N_PROCESSES = 20
 N_LINES = 100
 
-with open('chem_xref_mini_1.tsv') as f:
+with open('data/chem_xref.tsv') as f:
     lines = list(f.readlines())
 
 
