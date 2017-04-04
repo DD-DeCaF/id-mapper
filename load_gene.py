@@ -21,8 +21,8 @@ import re
 
 from multiprocessing import Pool
 
-N_PROCESSES = 20
-N_LINES = 100
+N_PROCESSES = 4
+N_LINES = 50
 
 with open('data/ecodata.txt') as f:
     lines = list(f.readlines())
@@ -57,7 +57,8 @@ def process_piece(chunk):
                         insert_pairs(graph, 'Gene', pair_1, Pair(n, key), organism='ecoli')
 
 
-graph = Graph(host=os.environ['DB_PORT_7687_TCP_ADDR'], password=os.environ['NEO4J_PASSWORD'])
+graph = Graph("{}:{}".format(os.environ['ID_MAPPER_API'], os.environ['ID_MAPPER_PORT']),
+              password=os.environ['ID_MAPPER_PASSWORD'])
 
 with Pool(processes=N_PROCESSES) as pool:
     pool.map(process_piece, [lines[i:i+N_LINES] for i in range(0, len(lines), N_LINES)])

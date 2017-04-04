@@ -8,7 +8,7 @@ from multiprocessing import Pool
 
 
 N_PROCESSES = 4
-N_LINES = 100
+N_LINES = 50
 
 graph = Graph("{}:{}".format(os.environ['ID_MAPPER_API'], os.environ['ID_MAPPER_PORT']),
               password=os.environ['ID_MAPPER_PASSWORD'])
