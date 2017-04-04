@@ -24,7 +24,7 @@ from multiprocessing import Pool
 N_PROCESSES = 20
 N_LINES = 100
 
-with open('ecodata.txt') as f:
+with open('data/ecodata.txt') as f:
     lines = list(f.readlines())
 
 DATABASES = ['ecogene', 'eck', 'name', 'syn', 'genbank', 'sp', 'blattner', 'asap', 'genobase', 'cg']
