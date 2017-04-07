@@ -19,13 +19,13 @@ from venom.rpc import Stub, http
 
 
 class QueryRequest(Message):
-    id = String()
-    db_from = String()
-    db_to = String()
+    id = String(description='Entity ID')
+    db_from = String(description='Database name for the entity ID')
+    db_to = String(description='Database name to map against')
 
 
 class QueryResponse(Message):
-    ids = Repeat(String())
+    ids = Repeat(String(), description='List of matching IDs')
 
 
 class IDMappingStub(Stub):

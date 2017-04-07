@@ -28,7 +28,11 @@ from id_mapper.graph import find_match, NoSuchNode
 
 
 class IDMapping(Service):
-    @http.GET('./query')
+    @http.GET(
+        './query',
+        description='Query entity by id and database name to get '
+                    'all the matching IDs from another database'
+    )
     def query(self, request: QueryRequest) -> QueryResponse:
         graph = Graph(
             host=os.environ['DB_PORT_7687_TCP_ADDR'],
