@@ -1,7 +1,6 @@
 from venom.fields import String, Repeat
 from venom.message import Message
-from venom.rpc import Stub
-from venom.rpc.stub import RPC
+from venom.rpc import Stub, http
 
 
 class QueryRequest(Message):
@@ -15,4 +14,6 @@ class QueryResponse(Message):
 
 
 class IDMappingStub(Stub):
-    query = RPC.http.GET('./query', QueryRequest, QueryResponse)
+    @http.GET('./query')
+    def query(self, request: QueryRequest) -> QueryResponse:
+        raise NotImplementedError
