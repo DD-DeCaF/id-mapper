@@ -13,26 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import deque
-from py2neo import NodeSelector, Node, Relationship
+from py2neo import Node, Relationship
+
+from id_mapper import logger
 
 
-class Is(Relationship): pass
-
-
-class NoSuchNode(Exception):
-    """
-    Raised if no node for the object exists
-    """
-    def __init__(self, node_id, database):
-        self.node = node_id
-        self.database = database
-
-    def __str__(self):
-        return 'No node for object {} from database {}'.format(
-            self.node,
-            self.database,
-        )
+class Is(Relationship):
+    pass
 
 
 def insert_pairs(graph, label, pair1, pair2, organism=None):
@@ -57,43 +44,25 @@ def insert_pairs(graph, label, pair1, pair2, organism=None):
     graph.merge(Is(nodes[1], nodes[0]))
 
 
-def find_match(graph, object_id, db_from, db_to):
+def query_identifiers(graph, object_type, object_ids, db_from, db_to, max_separation=3):
     """Return id for given metabolite from the corresponding database
 
     :param graph: Graph
-    :param object_id: metabolite id
+    :param object_type: The type of the object, e.g. Metabolite, Gene or Reaction.
+    :param object_ids: list of identifiers
     :param db_from: database name, f.e "bigg"
     :param db_to: database name, f.e "mnx"
+    :param max_separation: max degree of separation to search. Decided by link structure, at time of writing we don't
+    expect degree separation more than 3
     :return:
     """
-    selector = NodeSelector(graph)
-    result = []
-    found = False
-    for labels in ('Metabolite', 'Reaction', 'Gene'):
-        selected = list(selector.select(labels, id=object_id, db_name=db_from))
-        assert len(selected) <= 1
-        if selected:
-            found = True
-            result.extend(collect_matches(graph, selected[0], db_to))
-    if not found:
-        raise NoSuchNode(object_id, db_from)
-    return result
+    query = ("""MATCH (n:{object_type})-[:IS*..{separation}]->(b:{object_type})
+             WHERE n.db_name = {{db_from}} AND b.db_name = {{db_to}} AND n.id IN {{identifiers}}
+             RETURN n.id AS from, collect(distinct b.id) AS to"""
+             .format(separation=int(max_separation),
+                     object_type=object_type))  # possible to parametrize with cypher?
 
-
-def collect_matches(graph, node, db_to):
-    """
-    Perform BFS to find all the linked objects with the required database name
-    """
-    result = []
-    visited = set()
-    to_visit = deque([node])
-    while to_visit:
-        current = to_visit.pop()
-        if current['db_name'] == db_to:
-            result.append(current['id'])
-        for rel in graph.match(start_node=current, rel_type='IS'):
-            n = rel.end_node()
-            if n['id'] + n['db_name'] not in visited:
-                to_visit.appendleft(n)
-                visited.add(n['id'] + n['db_name'])
+    logger.info(query)
+    data = graph.data(query, parameters={'identifiers': object_ids, 'db_from': db_from, 'db_to': db_to})
+    result = {item['from']: item['to'] for item in data}
     return result

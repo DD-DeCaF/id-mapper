@@ -3,8 +3,6 @@ db:
   ports:
     - 7474:7474
     - 7687:7687
-  volumes:
-    - '/Users/svegal/neo4j_backup:/data'
   environment:
     - NEO4J_AUTH=neo4j/1
 web:
@@ -18,3 +16,6 @@ web:
     - PYTHONUNBUFFERED=1
     - PYTHONASYNCIODEBUG=1
     - NEO4J_PASSWORD=1
+    - ID_MAPPER_API
+    - ID_MAPPER_PORT
+    - ID_MAPPER_PASSWORD

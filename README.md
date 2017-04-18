@@ -10,24 +10,20 @@ Based on [MetaNetX](http://www.metanetx.org/). Information about metabolites and
 
 Example on how to find a match for the chemical with [BIGG](https://github.com/biosustain/venom) id `nh3` in [BioPath](https://webapps.molecular-networks.com/biopath3/biopath3) database:
 
+```{python}
+import requests
+import json
+query = json.dumps({'ids': ['atp'], 'dbFrom': 'bigg', 'dbTo': 'kegg', 'type': 'Metabolite'})
+requests.post('http://localhost/idmapping/query', data=query).json()
 ```
-GET /idmapping/query?id=nh3&db_from=bigg&db_to=biopath HTTP/1.1
-Accept: */*
-Accept-Encoding: gzip, deflate
-Connection: keep-alive
 
-
+```
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Length: 36
 Content-Type: application/json
 
-{
-    "ids": [
-        "Ammonia",
-        "Ammonium-ion"
-    ]
-}
+{'ids': {'atp': ['C00002', 'D08646']}}
 ```
 
 The graph consists of large amount of connected components. A connected component is considered being one object: a metabolite or a reaction. Search is returning all the elements in the component with `db_to` database name.

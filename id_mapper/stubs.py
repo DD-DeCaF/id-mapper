@@ -13,22 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from venom.fields import String, Repeat
+from venom.fields import String, Repeat, Map
 from venom.message import Message
 from venom.rpc import Stub, http
 
 
-class QueryRequest(Message):
-    id = String(description='Entity ID')
+class IdMapperQueryRequest(Message):
+    ids = Repeat(String(), description='Identifiers to query')
+    type = String(description='The type of the entity, i.e., Metabolite, Gene or Reaction')
     db_from = String(description='Database name for the entity ID')
     db_to = String(description='Database name to map against')
 
 
-class QueryResponse(Message):
-    ids = Repeat(String(), description='List of matching IDs')
+class IdMapperQueryResponse(Message):
+    ids = Map(Repeat(String()), description='Mapping between each query identifier and the found matches')
 
 
-class IDMappingStub(Stub):
-    @http.GET('./query')
-    def query(self, request: QueryRequest) -> QueryResponse:
+class IdMappingStub(Stub):
+    @http.POST('./query')
+    def query(self, request: IdMapperQueryRequest) -> IdMapperQueryResponse:
         raise NotImplementedError
+
+
+
+
+
