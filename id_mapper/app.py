@@ -25,10 +25,14 @@ from venom.rpc.reflect.service import ReflectService
 
 from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
 from id_mapper.graph import query_identifiers
+from id_mapper import logger
 
 
 class IdMapping(Service):
-    graph = Graph("{}:{}".format(os.environ['ID_MAPPER_API'], os.environ['ID_MAPPER_PORT']),
+    logger.info('connect to graph-db at {}'.format(os.environ['ID_MAPPER_API']))
+    graph = Graph(os.environ['ID_MAPPER_API'],
+                  http_port=int(os.environ['ID_MAPPER_PORT']),
+                  user=os.environ['ID_MAPPER_USER'],
                   password=os.environ['ID_MAPPER_PASSWORD'])
 
     @http.POST(

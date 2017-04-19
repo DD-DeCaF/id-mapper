@@ -18,8 +18,10 @@ from py2neo import Graph
 from id_mapper.graph import insert_pairs, query_identifiers
 from id_mapper.metanetx import Pair
 
-
-graph = Graph(host=os.environ['DB_PORT_7687_TCP_ADDR'], password='1')
+graph = Graph(os.environ['ID_MAPPER_API'],
+              http_port=int(os.environ['ID_MAPPER_PORT']),
+              user=os.environ['ID_MAPPER_USER'],
+              password=os.environ['ID_MAPPER_PASSWORD'])
 
 
 elements = [
