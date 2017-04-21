@@ -47,7 +47,7 @@ class IdMapping(Service):
         ))
 
 
-venom = Venom()
+venom = Venom(version='0.2.0', title='ID Mapper')
 venom.add(IdMapping)
 venom.add(ReflectService)
 
