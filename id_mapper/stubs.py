@@ -19,7 +19,7 @@ from venom.rpc import Stub, http
 
 
 class IdMapperQueryRequest(Message):
-    ids = Repeat(String(), description='Identifiers to query')
+    ids = Repeat(String(description='Identifiers to query'))
     type = String(description='The type of the entity, i.e., Metabolite, Gene or Reaction')
     db_from = String(description='Database name for the entity ID')
     db_to = String(description='Database name to map against')
