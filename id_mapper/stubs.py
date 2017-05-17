@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from venom.fields import String, Repeat, Map, repeated
+from venom.fields import String, Repeat, Map, repeated, MapField
 from venom.message import Message
 from venom.rpc import Stub, http
 
@@ -26,7 +26,7 @@ class IdMapperQueryRequest(Message):
 
 
 class IdMapperQueryResponse(Message):
-    ids = Map(repeated(String()), description='Mapping between each query identifier and the found matches')
+    ids = MapField(repeated(String()), description='Mapping between each query identifier and the found matches')
 
 
 class IdMappingStub(Stub):
