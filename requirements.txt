@@ -1,4 +1,4 @@
-venom==1.0.0a5
+venom==1.0.0a6
 requests
 codecov
 aiohttp
