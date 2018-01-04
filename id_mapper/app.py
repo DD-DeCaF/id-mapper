@@ -27,6 +27,8 @@ from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
 from id_mapper.graph import query_identifiers
 from id_mapper import logger
 
+from .middleware import raven_middleware
+
 
 class IdMapping(Service):
     logger.info('connect to graph-db at {}'.format(os.environ['ID_MAPPER_API']))
@@ -51,7 +53,7 @@ venom = Venom()
 venom.add(IdMapping)
 venom.add(ReflectService)
 
-app = create_app(venom)
+app = create_app(venom, web.Application(middlewares=[raven_middleware]))
 
 if __name__ == '__main__':
     web.run_app(app)
