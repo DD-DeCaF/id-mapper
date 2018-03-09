@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2014 Novo Nordisk Foundation Center for Biosustainability, DTU.
+# Copyright 2018 Novo Nordisk Foundation Center for Biosustainability, DTU.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
 from id_mapper.graph import query_identifiers
 from id_mapper import logger
 
+from .middleware import raven_middleware
+
 
 class IdMapping(Service):
     logger.info('connect to graph-db at {}'.format(os.environ['ID_MAPPER_API']))
@@ -51,7 +53,7 @@ venom = Venom(version='0.2.0', title='ID Mapper')
 venom.add(IdMapping)
 venom.add(ReflectService)
 
-app = create_app(venom)
+app = create_app(venom, web.Application(middlewares=[raven_middleware]))
 
 if __name__ == '__main__':
     web.run_app(app)
