@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: id-mapper-production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - api.dd-decaf.eu
+    - api-staging.dd-decaf.eu
+    secretName: decaf-tls
+  rules:
+  - host: api.dd-decaf.eu
+    http:
+      paths:
+      - path: /idmapping
+        backend:
+          serviceName: id-mapper-production
+          servicePort: 80

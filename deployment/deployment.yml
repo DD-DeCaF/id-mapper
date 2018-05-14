@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: id-mapper-production
+spec:
+  selector:
+    matchLabels:
+      app: id-mapper
+      env: production
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: id-mapper
+        env: production
+    spec:
+      containers:
+      - name: web
+        image: gcr.io/dd-decaf-cfbf6/id-mapper:master
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PYTHONASYNCIODEBUG
+          value: "1"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: SENTRY_DSN
+        - name: ID_MAPPER_API
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: ID_MAPPER_API
+        - name: ID_MAPPER_PORT
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: ID_MAPPER_PORT
+        - name: ID_MAPPER_USER
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: ID_MAPPER_USER
+        - name: ID_MAPPER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: ID_MAPPER_PASSWORD
+        command: ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "--preload", "-t", "150", "-k", "aiohttp.worker.GunicornWebWorker", "id_mapper.app:app"]
+      - name: db
+        image: neo4j:3.1
+        ports:
+        - containerPort: 7474
+        env:
+        - name: NEO4J_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: id-mapper-production
+              key: NEO4J_AUTH
+        volumeMounts:
+          - mountPath: "/data"
+            name: id-mapper-production
+      volumes:
+        - name: id-mapper-production
+          persistentVolumeClaim:
+           claimName: id-mapper-production
