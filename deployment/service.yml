@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: id-mapper-production
+  annotations:
+    prometheus.io/probe: "true"
+spec:
+  selector:
+    app: id-mapper
+    env: production
+  ports:
+  - name: web
+    protocol: TCP
+    port: 80
+    targetPort: 8000

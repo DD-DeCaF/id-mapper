@@ -1,21 +1,52 @@
 sudo: required
-language: python
+language: minimal
+
+git:
+  depth: 2
+
 services:
-- docker
+  - docker
+
+env:
+  global:
+    - IMAGE_REPO=gcr.io/dd-decaf-cfbf6/id-mapper
+    - IMAGE_TAG=travis-ci-test
+    - IMAGE=${IMAGE_REPO}:${IMAGE_TAG}
+
 before_install:
-- docker login -e=$DOCKER_EMAIL -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD
+  - echo ${DOCKER_PASSWORD} | docker login -u=decaftravis --password-stdin
+
 install:
-- docker-compose up -d db
-- sleep 30s
-- docker-compose up -d web
+  - docker build -t ${IMAGE} .
+  - docker-compose up -d db
+  - sleep 30s  # FIXME: better wait for db logic
+  - docker-compose up -d web
+
 script:
-- docker-compose logs
-- docker-compose exec web /bin/bash -c "py.test --cov=./id_mapper tests/"
-- docker-compose logs
+  - docker-compose run --rm web py.test --cov=./id_mapper tests/
+
 after_success:
-- docker-compose exec web /bin/bash -c "codecov --token $CODECOV_TOKEN"
+  - docker-compose exec web /bin/bash -c "codecov --token $CODECOV_TOKEN"
+
+before_deploy:
+  - ./scripts/install_gcloud.sh
+  - ./scripts/install_kubectl.sh
+  - docker tag ${IMAGE} ${IMAGE_REPO}:${TRAVIS_COMMIT::12}
+  - docker tag ${IMAGE} ${IMAGE_REPO}:${TRAVIS_BRANCH}
+  - docker push ${IMAGE_REPO}:${TRAVIS_COMMIT::12}
+  - docker push ${IMAGE_REPO}:${TRAVIS_BRANCH}
+
 deploy:
   provider: script
-  script: ./push_to_hub_travis.sh
+  script: ./scripts/deploy.sh
   on:
     all_branches: true
+
+notifications:
+  email: false
+  slack:
+    rooms:
+      - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}
+    on_success: change
+    on_failure: always
+    on_pull_requests: false
