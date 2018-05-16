@@ -48,6 +48,12 @@ spec:
               name: id-mapper-production
               key: ID_MAPPER_PASSWORD
         command: ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "--preload", "-t", "150", "-k", "aiohttp.worker.GunicornWebWorker", "id_mapper.app:app"]
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "128Mi"
+          limits:
+            cpu: "400m"
       - name: db
         image: neo4j:3.1
         ports:
@@ -58,6 +64,12 @@ spec:
             secretKeyRef:
               name: id-mapper-production
               key: NEO4J_AUTH
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "1Gi"
+          limits:
+            cpu: "100m"
         volumeMounts:
           - mountPath: "/data"
             name: id-mapper-production
