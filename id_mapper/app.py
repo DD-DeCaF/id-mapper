@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 from py2neo import Graph
 from aiohttp import web
@@ -24,9 +25,11 @@ from venom.rpc.reflect.service import ReflectService
 
 from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
 from id_mapper.graph import query_identifiers
-from id_mapper import logger
 
 from .middleware import raven_middleware
+
+
+logger = logging.getLogger(__name__)
 
 
 class IdMapping(Service):

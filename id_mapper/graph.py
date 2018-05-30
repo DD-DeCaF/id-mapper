@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from py2neo import Node, Relationship
 
-from id_mapper import logger
+
+logger = logging.getLogger(__name__)
 
 
 class Is(Relationship):
