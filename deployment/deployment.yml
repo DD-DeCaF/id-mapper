@@ -20,8 +20,6 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: PYTHONASYNCIODEBUG
-          value: "1"
         - name: SENTRY_DSN
           valueFrom:
             secretKeyRef:
