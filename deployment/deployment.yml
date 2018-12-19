@@ -48,7 +48,7 @@ spec:
         command: ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "--preload", "-t", "150", "-k", "aiohttp.worker.GunicornWebWorker", "id_mapper.app:app"]
         resources:
           requests:
-            cpu: "100m"
+            cpu: "10m"
           limits:
             cpu: "2000m"
       - name: db
@@ -63,7 +63,7 @@ spec:
               key: NEO4J_AUTH
         resources:
           requests:
-            cpu: "100m"
+            cpu: "10m"
           limits:
             cpu: "2000m"
         volumeMounts:
