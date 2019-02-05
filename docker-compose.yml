@@ -1,25 +1,43 @@
-version: '2'
+version: "3.1"
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gcr.io/dd-decaf-cfbf6/id-mapper:${IMAGE_TAG:-latest}
+    networks:
+      default:
+      DD-DeCaF:
+        aliases:
+          - id-mapper
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      - db
+    volumes:
+      - ".:/app"
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - FLASK_APP=src/id_mapper/wsgi.py
+      - SCRIPT_NAME=${SCRIPT_NAME}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:4200}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - ID_MAPPER_API=${ID_MAPPER_API}
+      - ID_MAPPER_PORT=${ID_MAPPER_PORT}
+      - ID_MAPPER_PASSWORD=${ID_MAPPER_PASSWORD}
+      - ID_MAPPER_USER=${ID_MAPPER_USER}
+    command: gunicorn -c gunicorn.py id_mapper.wsgi:app
+
   db:
     image: neo4j:3.1
+    networks:
+      - default
     ports:
       - 7474:7474
       - 7687:7687
     environment:
       - NEO4J_AUTH=neo4j/1
-  web:
-    build:
-      context: .
-    ports:
-      - 80:7000
-    volumes:
-      - .:/id_mapper
-    depends_on:
-      - db
-    environment:
-      - ID_MAPPER_API=${ID_MAPPER_API}
-      - ID_MAPPER_PORT=${ID_MAPPER_PORT}
-      - ID_MAPPER_PASSWORD=${ID_MAPPER_PASSWORD}
-      - ID_MAPPER_USER=${ID_MAPPER_USER}
-      - PYTHONASYNCIODEBUG=1
-    restart: always
+
+networks:
+  DD-DeCaF:
+    external: true

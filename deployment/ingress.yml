@@ -8,7 +8,6 @@ spec:
   tls:
   - hosts:
     - api.dd-decaf.eu
-    - api-staging.dd-decaf.eu
     secretName: decaf-tls
   rules:
   - host: api.dd-decaf.eu

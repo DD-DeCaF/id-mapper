@@ -21,6 +21,14 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        - name: ENVIRONMENT
+          value: production
+        - name: SCRIPT_NAME
+          value: /id-mapper
+        - name: FLASK_APP
+          value: src/id_mapper/wsgi.py
+        - name: ALLOWED_ORIGINS
+          value: "*"
         - name: SENTRY_DSN
           valueFrom:
             secretKeyRef:
@@ -46,7 +54,12 @@ spec:
             secretKeyRef:
               name: id-mapper-production
               key: ID_MAPPER_PASSWORD
-        command: ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "--preload", "-t", "150", "-k", "aiohttp.worker.GunicornWebWorker", "id_mapper.app:app"]
+        command: ["gunicorn", "-c", "gunicorn.py", "id_mapper.wsgi:app"]
+        readinessProbe:
+          httpGet:
+            path: /id-mapper/healthz
+            port: 8000
+          initialDelaySeconds: 5
         resources:
           requests:
             cpu: "10m"

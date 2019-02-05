@@ -4,35 +4,38 @@ language: minimal
 git:
   depth: 2
 
+branches:
+  only:
+  - master
+  - devel
+
 services:
   - docker
 
 env:
   global:
     - IMAGE_REPO=gcr.io/dd-decaf-cfbf6/id-mapper
-    - IMAGE_TAG=travis-ci-test
+    - IMAGE_TAG=${TRAVIS_BRANCH}
     - IMAGE=${IMAGE_REPO}:${IMAGE_TAG}
 
-before_install:
-  - echo ${DOCKER_PASSWORD} | docker login -u=decaftravis --password-stdin
-
 install:
-  - docker build -t ${IMAGE} .
-  - docker-compose up -d db
-  - sleep 30s  # FIXME: better wait for db logic
-  - docker-compose up -d web
+  - docker build -t ${IMAGE_REPO}:${TRAVIS_COMMIT::12} -t ${IMAGE_REPO}:${TRAVIS_BRANCH} .
+  - make setup
 
 script:
-  - docker-compose run --rm web py.test --cov=./id_mapper tests/
-
-after_success:
-  - docker-compose exec web /bin/bash -c "codecov --token $CODECOV_TOKEN"
+  - make flake8
+  - make isort
+  - make license
+  - make safety
+  - make test-travis
+  - # Run the tests and report coverage (see https://docs.codecov.io/docs/testing-with-docker).
+  - mkdir --parents /tmp/coverage
+  - docker-compose run --rm -e ENVIRONMENT=testing -v "/tmp/coverage:/tmp/coverage" web pytest --cov-report "xml:/tmp/coverage/coverage.xml" --cov-report term --cov=src/id_mapper
+  - bash <(curl -s https://codecov.io/bash) -f "/tmp/coverage/coverage.xml"
 
 before_deploy:
   - ./scripts/install_gcloud.sh
   - ./scripts/install_kubectl.sh
-  - docker tag ${IMAGE} ${IMAGE_REPO}:${TRAVIS_COMMIT::12}
-  - docker tag ${IMAGE} ${IMAGE_REPO}:${TRAVIS_BRANCH}
   - docker push ${IMAGE_REPO}:${TRAVIS_COMMIT::12}
   - docker push ${IMAGE_REPO}:${TRAVIS_BRANCH}
 
@@ -48,5 +51,5 @@ notifications:
     rooms:
       secure: "R7+x1OUaMsPuoHyoLi9sRwEJWexI+wNaCcIK81XzENW3/sJfNw3+AJcRnN3X8IJiUHCmM6g9xd/Dwa5X6rpV6IvGOc20IeR4a/K58FCHQME1FeLGxoJFUI4hDKr/m1bzAL5EkDdTrGHCMIKDbGQP647dp5HewqBjrXdYjE41CnYyuBLj2WKnxI/owQyAQn4zGptscNzT7MvAunFEuT8NzsBmBi08feIM6sJBgJrYsnPT+5iWiG0Ai7GECrsYjrw/BqTz6nytvcbGy8PnbVFDYgcFHHVS45y8/6m0rNox0zSn3kOPKq6K5cnMiMCAknagxCn9uiJMPMDpSiPOxVZxeNHbVQR5MAY/6J8j6pxj9Z6aiDto3XxQcqMDAUDS/ClXEvlebbcDI2hfJ8IDnqgYH6pcopBwfnePuiqR5Kt9nXBo7m4w1dPc/qItzBZd8sgE2xQlpQWLWG23SkcDlAb83D6tP73MEYbj9MFMPDr+FxZI8qDLzvMZK69pBWcgZBMQabylMtUOcS4gJa3TqjTU+EouiPqgJ1+PrUdZU0h3/H3pS6u7KYaIGcaLh3fMUERirBVC+kvk2Oy/QBKYmr/zzElbyAx162w8pUc6l0rwvEoURdIF3MqxV9Op3veB63Dg99w9KUY5zevVSCDV9HoQGCdKBmEGFHZwQckcAXU468s="
     on_success: change
-    on_failure: always
+    on_failure: change
     on_pull_requests: false

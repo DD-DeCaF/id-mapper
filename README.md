@@ -1,10 +1,8 @@
+# ID Mapper
+
 [![Build Status](https://travis-ci.org/DD-DeCaF/id-mapper.svg?branch=master)]()
 [![Codecov](https://codecov.io/gh/DD-DeCaF/id-mapper/branch/master/graph/badge.svg)](https://codecov.io/gh/DD-DeCaF/id-mapper)
 [![DOI](https://zenodo.org/badge/80559780.svg)](https://zenodo.org/badge/latestdoi/80559780)
-
-# ID Mapper
-
-Powered by [Venom](https://github.com/biosustain/venom)
 
 Based on [MetaNetX](http://www.metanetx.org/). Information about metabolites and reactions is provided by [MNXref namespace](http://www.metanetx.org/mnxdoc/mnxref.html)
 

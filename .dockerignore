@@ -1,0 +1,7 @@
+*
+!src/
+!scripts/
+!tests/
+!gunicorn.py
+!setup.cfg
+!*requirements.in
