@@ -16,6 +16,7 @@ import logging
 import os
 from py2neo import Graph
 from aiohttp import web
+import aiohttp_cors
 
 from venom.rpc import Service, Venom
 from venom.rpc.comms.aiohttp import create_app
@@ -56,6 +57,19 @@ venom.add(IdMapping)
 venom.add(ReflectService)
 
 app = create_app(venom, web.Application(middlewares=[raven_middleware]))
+
+# Configure default CORS settings.
+cors = aiohttp_cors.setup(app, defaults={
+    "*": aiohttp_cors.ResourceOptions(
+        expose_headers="*",
+        allow_headers="*",
+        allow_credentials=True,
+    )
+})
+
+# Configure CORS on all routes.
+for route in list(app.router.routes()):
+    cors.add(route)
 
 if __name__ == '__main__':
     web.run_app(app)
