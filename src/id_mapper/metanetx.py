@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests
 from collections import namedtuple
-from id_mapper.settings import METANETX_URL
+
+import requests
+
+from .app import app
 
 
 Pair = namedtuple('Pair', ['metabolite', 'database'])
@@ -33,7 +35,7 @@ def load_xrefs(filename):
     """
     Download Metanetx cross-references files and generate references iterables
     """
-    response = requests.get((METANETX_URL + '/{}.tsv').format(filename))
+    response = requests.get((app.config['METANETX_URL'] + '/{}.tsv').format(filename))
     response.raise_for_status()
     for line in response.iter_lines(decode_unicode=response.encoding):
         if line.startswith('#'):

@@ -23,8 +23,8 @@ def test_docs(client):
     assert resp.content_type == "text/html; charset=utf-8"
 
 
-def test_hello(client):
+def test_query(client):
     """Expect the example endpoint to echo provided name."""
-    resp = client.get("/hello", json={'name': "Cleese"})
+    resp = client.post("/query", json={'ids': [], 'db_from': "", 'db_to': "",
+                                       'type': "Metabolite"})
     assert resp.status_code == 200
-    assert resp.json == {'name': "Cleese"}

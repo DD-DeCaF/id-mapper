@@ -1,10 +1,11 @@
-# Copyright 2014 Novo Nordisk Foundation Center for Biosustainability, DTU.
+# Copyright (c) 2017, Novo Nordisk Foundation Center for Biosustainability,
+# Technical University of Denmark.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,64 +13,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Expose the main Flask-RESTPlus application."""
+
 import logging
-import os
-from py2neo import Graph
-from aiohttp import web
-import aiohttp_cors
+import logging.config
 
-from venom.rpc import Service, Venom
-from venom.rpc.comms.aiohttp import create_app
-from venom.rpc.method import http
-from venom.rpc.reflect.service import ReflectService
+from flask import Flask
+from flask_cors import CORS
+from raven.contrib.flask import Sentry
+from werkzeug.contrib.fixers import ProxyFix
 
-
-from id_mapper.stubs import IdMapperQueryRequest, IdMapperQueryResponse
-from id_mapper.graph import query_identifiers
-
-from .middleware import raven_middleware
+from . import errorhandlers
 
 
-logger = logging.getLogger(__name__)
+app = Flask(__name__)
 
 
-class IdMapping(Service):
-    logger.info('connect to graph-db at {}'.format(os.environ['ID_MAPPER_API']))
-    graph = Graph(os.environ['ID_MAPPER_API'],
-                  http_port=int(os.environ['ID_MAPPER_PORT']),
-                  user=os.environ['ID_MAPPER_USER'],
-                  password=os.environ['ID_MAPPER_PASSWORD'])
+def init_app(application):
+    """Initialize the main app with config information and routes."""
+    from id_mapper.settings import current_config
+    application.config.from_object(current_config())
 
-    @http.POST(
-        './query',
-        description='Query entity by list of identifiers and a database name to get '
-                    'all the matching identifiers from another database'
-    )
-    def query(self, request: IdMapperQueryRequest) -> IdMapperQueryResponse:
-        return IdMapperQueryResponse(ids=query_identifiers(
-            self.graph, object_type=request.type, object_ids=list(request.ids),
-            db_from=request.db_from, db_to=request.db_to
-        ))
+    # Configure logging
+    logging.config.dictConfig(application.config['LOGGING'])
 
+    # Configure Sentry
+    if application.config['SENTRY_DSN']:
+        sentry = Sentry(dsn=application.config['SENTRY_DSN'], logging=True,
+                        level=logging.ERROR)
+        sentry.init_app(application)
 
-venom = Venom(version='0.2.0', title='ID Mapper')
-venom.add(IdMapping)
-venom.add(ReflectService)
+    # Add routes and resources.
+    from id_mapper import resources
+    resources.init_app(application)
 
-app = create_app(venom, web.Application(middlewares=[raven_middleware]))
+    # Add CORS information for all resources.
+    CORS(application)
 
-# Configure default CORS settings.
-cors = aiohttp_cors.setup(app, defaults={
-    "*": aiohttp_cors.ResourceOptions(
-        expose_headers="*",
-        allow_headers="*",
-        allow_credentials=True,
-    )
-})
+    # Register error handlers
+    errorhandlers.init_app(application)
 
-# Configure CORS on all routes.
-for route in list(app.router.routes()):
-    cors.add(route)
-
-if __name__ == '__main__':
-    web.run_app(app)
+    # Please keep in mind that it is a security issue to use such a middleware
+    # in a non-proxy setup because it will blindly trust the incoming headers
+    # which might be forged by malicious clients.
+    # We require this in order to serve the HTML version of the OpenAPI docs
+    # via https.
+    application.wsgi_app = ProxyFix(application.wsgi_app)

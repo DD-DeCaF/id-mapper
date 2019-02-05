@@ -13,7 +13,7 @@ spec:
   - host: api.dd-decaf.eu
     http:
       paths:
-      - path: /idmapping
+      - path: /id-mapper
         backend:
           serviceName: id-mapper-production
           servicePort: 80

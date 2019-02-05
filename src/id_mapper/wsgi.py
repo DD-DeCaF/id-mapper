@@ -13,4 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""ID mapper for biological entities (metabolites, reactions, genes, etc)"""
+"""Prepare the application for use by the WSGI server (gunicorn)."""
+
+from id_mapper.app import app, init_app
+
+
+init_app(app)

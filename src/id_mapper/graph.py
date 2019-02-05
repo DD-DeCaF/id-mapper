@@ -13,18 +13,27 @@
 # limitations under the License.
 
 import logging
+import os
 
-from py2neo import Node, Relationship
+from py2neo import Graph, Node, Relationship
 
 
 logger = logging.getLogger(__name__)
+
+graph = Graph(
+    os.environ['ID_MAPPER_API'],
+    http_port=int(os.environ['ID_MAPPER_PORT']),
+    user=os.environ['ID_MAPPER_USER'],
+    password=os.environ['ID_MAPPER_PASSWORD'],
+)
+logger.info("Connected to graph db")
 
 
 class Is(Relationship):
     pass
 
 
-def insert_pairs(graph, label, pair1, pair2, organism=None):
+def insert_pairs(label, pair1, pair2, organism=None):
     """Merge nodes to database and create mutual IS relationships between
 
     :param graph: Graph
@@ -46,10 +55,9 @@ def insert_pairs(graph, label, pair1, pair2, organism=None):
     graph.merge(Is(nodes[1], nodes[0]))
 
 
-def query_identifiers(graph, object_type, object_ids, db_from, db_to, max_separation=3):
+def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3):
     """Return id for given metabolite from the corresponding database
 
-    :param graph: Graph
     :param object_type: The type of the object, e.g. Metabolite, Gene or Reaction.
     :param object_ids: list of identifiers
     :param db_from: database name, f.e "bigg"

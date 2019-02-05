@@ -12,16 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from py2neo import Graph
-from id_mapper.graph import insert_pairs, query_identifiers
+from id_mapper.graph import graph, insert_pairs, query_identifiers
 from id_mapper.metanetx import Pair
-
-
-graph = Graph(os.environ['ID_MAPPER_API'],
-              http_port=int(os.environ['ID_MAPPER_PORT']),
-              user=os.environ['ID_MAPPER_USER'],
-              password=os.environ['ID_MAPPER_PASSWORD'])
 
 
 elements = [
@@ -31,16 +23,16 @@ elements = [
 ]
 
 
-def test_insert_pairs():
-    insert_pairs(graph, 'Metabolite', *elements[0])
+def test_insert_pairs(app):
+    insert_pairs('Metabolite', *elements[0])
     assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 2
     assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 2
-    insert_pairs(graph, 'Metabolite', *elements[1])
+    insert_pairs('Metabolite', *elements[1])
     assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 3
     assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 4
-    insert_pairs(graph, 'Metabolite', *elements[2])
+    insert_pairs('Metabolite', *elements[2])
     assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 4
     assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 6
-    assert query_identifiers(graph, 'Metabolite', 'C', 'z', 'y')['C'] == ['B']
-    assert 'B' not in query_identifiers(graph, 'Metabolite', 'N', 'z', 'y')
+    assert query_identifiers('Metabolite', 'C', 'z', 'y')['C'] == ['B']
+    assert 'B' not in query_identifiers('Metabolite', 'N', 'z', 'y')
     graph.delete_all()

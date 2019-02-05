@@ -23,7 +23,8 @@ install:
   - make setup
 
 script:
-  - make flake8
+  # Flake8 temporarily disabled until service is refreshed
+  # - make flake8
   - make isort
   - make license
   - make safety
