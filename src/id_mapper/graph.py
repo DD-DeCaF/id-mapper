@@ -14,19 +14,29 @@
 
 import logging
 import os
+import time
 
 from py2neo import Graph, Node, Relationship
+from py2neo.packages.httpstream.http import SocketError
 
 
 logger = logging.getLogger(__name__)
 
-graph = Graph(
-    os.environ['ID_MAPPER_API'],
-    http_port=int(os.environ['ID_MAPPER_PORT']),
-    user=os.environ['ID_MAPPER_USER'],
-    password=os.environ['ID_MAPPER_PASSWORD'],
-)
-logger.info("Connected to graph db")
+connected = False
+while not connected:
+    try:
+        graph = Graph(
+            os.environ['ID_MAPPER_API'],
+            http_port=int(os.environ['ID_MAPPER_PORT']),
+            user=os.environ['ID_MAPPER_USER'],
+            password=os.environ['ID_MAPPER_PASSWORD'],
+        )
+        logger.info("Connected to graph db")
+        connected = True
+    except SocketError as error:
+        logger.info(f"{str(error)}: Could not connect to database, retrying in "
+                    "5 seconds...")
+        time.sleep(5)
 
 
 class Is(Relationship):
