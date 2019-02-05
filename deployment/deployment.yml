@@ -17,6 +17,7 @@ spec:
       containers:
       - name: web
         image: gcr.io/dd-decaf-cfbf6/id-mapper:master
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
@@ -53,6 +54,7 @@ spec:
             cpu: "2000m"
       - name: db
         image: neo4j:3.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 7474
         env:
