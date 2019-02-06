@@ -46,7 +46,6 @@ class Is(Relationship):
 def insert_pairs(label, pair1, pair2, organism=None):
     """Merge nodes to database and create mutual IS relationships between
 
-    :param graph: Graph
     :param label: "Metabolite" or "Reaction"
     :param pair1: node 1
     :param pair2: node 2
