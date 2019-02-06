@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 connected = False
 while not connected:
     try:
-        graph = Graph(
+        GRAPH = Graph(
             os.environ['ID_MAPPER_API'],
             http_port=int(os.environ['ID_MAPPER_PORT']),
             user=os.environ['ID_MAPPER_USER'],
@@ -59,9 +59,9 @@ def insert_pairs(label, pair1, pair2, organism=None):
             kwargs['organism'] = organism
         nodes.append(Node(label, **kwargs))
     for n in nodes:
-        graph.merge(n)
-    graph.merge(Is(nodes[0], nodes[1]))
-    graph.merge(Is(nodes[1], nodes[0]))
+        GRAPH.merge(n)
+    GRAPH.merge(Is(nodes[0], nodes[1]))
+    GRAPH.merge(Is(nodes[1], nodes[0]))
 
 
 def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3):
@@ -82,6 +82,6 @@ def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3)
                      object_type=object_type))  # possible to parametrize with cypher?
 
     logger.info(query)
-    data = graph.data(query, parameters={'identifiers': object_ids, 'db_from': db_from, 'db_to': db_to})
+    data = GRAPH.data(query, parameters={'identifiers': object_ids, 'db_from': db_from, 'db_to': db_to})
     result = {item['from']: item['to'] for item in data}
     return result
