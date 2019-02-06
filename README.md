@@ -11,8 +11,8 @@ Example on how to find a match for the chemical with [BIGG](https://github.com/b
 ```{python}
 import requests
 import json
-query = json.dumps({'ids': ['atp'], 'dbFrom': 'bigg', 'dbTo': 'kegg', 'type': 'Metabolite'})
-requests.post('http://localhost/idmapping/query', data=query).json()
+query = json.dumps({'ids': ['atp'], 'db_from': 'bigg', 'db_to': 'kegg', 'type': 'Metabolite'})
+requests.post('http://localhost/id-mapper/query', data=query).json()
 ```
 
 ```
