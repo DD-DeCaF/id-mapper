@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from id_mapper.graph import graph, insert_pairs, query_identifiers
+from id_mapper.graph import GRAPH, insert_pairs, query_identifiers
 from id_mapper.metanetx import Pair
 
 
@@ -25,14 +25,14 @@ elements = [
 
 def test_insert_pairs(app):
     insert_pairs('Metabolite', *elements[0])
-    assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 2
-    assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 2
+    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 2
+    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 2
     insert_pairs('Metabolite', *elements[1])
-    assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 3
-    assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 4
+    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 3
+    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 4
     insert_pairs('Metabolite', *elements[2])
-    assert graph.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 4
-    assert graph.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 6
+    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 4
+    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 6
     assert query_identifiers('Metabolite', 'C', 'z', 'y')['C'] == ['B']
     assert 'B' not in query_identifiers('Metabolite', 'N', 'z', 'y')
-    graph.delete_all()
+    GRAPH.delete_all()
