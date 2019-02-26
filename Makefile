@@ -30,22 +30,19 @@ style: flake8 isort license
 
 ## Run flake8.
 flake8:
-	docker-compose run --rm web \
-		flake8 src/id_mapper tests
+	docker-compose run --rm web flake8 src tests
 
 ## Check Python package import order.
 isort:
-	docker-compose run --rm web \
-		isort --check-only --recursive src/id_mapper tests
+	docker-compose run --rm web isort --check-only --recursive src tests
 
 ## Sort imports and write changes to files.
 isort-save:
-	docker-compose run --rm web \
-		isort --recursive src/id_mapper tests
+	docker-compose run --rm web isort --recursive src tests
 
 ## Verify source code license headers.
 license:
-	./scripts/verify_license_headers.sh src/id_mapper tests
+	./scripts/verify_license_headers.sh src tests
 
 ## Check for known vulnerabilities in python dependencies.
 safety:
