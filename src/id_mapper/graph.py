@@ -16,7 +16,7 @@ import logging
 import os
 import time
 
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph
 from py2neo.packages.httpstream.http import SocketError
 
 
@@ -37,31 +37,6 @@ while not connected:
         logger.info(f"{str(error)}: Could not connect to database, retrying in "
                     "5 seconds...")
         time.sleep(5)
-
-
-class Is(Relationship):
-    pass
-
-
-def insert_pairs(label, pair1, pair2, organism=None):
-    """Merge nodes to database and create mutual IS relationships between
-
-    :param label: "Metabolite" or "Reaction"
-    :param pair1: node 1
-    :param pair2: node 2
-    :param organism: str
-    :return:
-    """
-    nodes = []
-    for pair in (pair1, pair2):
-        kwargs = dict(id=pair.metabolite, db_name=pair.database)
-        if organism:
-            kwargs['organism'] = organism
-        nodes.append(Node(label, **kwargs))
-    for n in nodes:
-        GRAPH.merge(n)
-    GRAPH.merge(Is(nodes[0], nodes[1]))
-    GRAPH.merge(Is(nodes[1], nodes[0]))
 
 
 def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3):
