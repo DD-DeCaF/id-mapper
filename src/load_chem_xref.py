@@ -15,8 +15,8 @@
 """
 Load chemical xrefs into the graph db.
 
-The data source `chem_xref.tsv` should be downloaded from
-https://www.metanetx.org/mnxdoc/mnxref.html and placed in the data/ subdir.
+The data source `chem_xref.tsv` must be downloaded from
+https://www.metanetx.org/mnxdoc/mnxref.html.
 """
 
 import os
@@ -43,10 +43,10 @@ while not connected:
         print(f"Could not connect to database, retrying in 2 seconds...")
         time.sleep(2)
 
-print("Reading and parsing 'data/chem_xref.tsv'")
+print("Reading and parsing 'chem_xref.tsv'")
 Ref = namedtuple("Ref", ["id", "db", "mnx_id"])
 references = []
-with open("data/chem_xref.tsv") as file_:
+with open("chem_xref.tsv") as file_:
     lines = file_.readlines()
 
 for line in tqdm(lines, mininterval=0.2):

@@ -25,7 +25,7 @@ The graph consists of large amount of connected components. A connected componen
 Download and load the chemical references into the graph database (may take several hours):
 
 ```{bash}
-curl -o data/chem_xref.tsv https://www.metanetx.org/cgi-bin/mnxget/mnxref/chem_xref.tsv
+curl -O https://www.metanetx.org/cgi-bin/mnxget/mnxref/chem_xref.tsv
 docker-compose run --rm web python src/load_chem_xref.py
 ```
 
