@@ -14,12 +14,12 @@
 
 import os
 import re
+from collections import namedtuple
 from multiprocessing import Pool
 
 from py2neo import Graph
 
 from id_mapper.graph import insert_pairs
-from id_mapper.metanetx import Pair, make_pairs
 
 
 N_PROCESSES = 4
@@ -29,6 +29,7 @@ with open('data/ecodata.txt') as f:
     lines = list(f.readlines())
 
 DATABASES = ['ecogene', 'eck', 'name', 'syn', 'genbank', 'sp', 'blattner', 'asap', 'genobase', 'cg']
+Pair = namedtuple('Pair', ['metabolite', 'database'])
 
 
 def process_piece(chunk):
