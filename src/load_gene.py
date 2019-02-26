@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import os
-from id_mapper.metanetx import make_pairs, Pair
-from id_mapper.graph import insert_pairs
-from py2neo import Graph
 import re
-
 from multiprocessing import Pool
+
+from py2neo import Graph
+
+from id_mapper.graph import insert_pairs
+from id_mapper.metanetx import Pair, make_pairs
+
 
 N_PROCESSES = 4
 N_LINES = 50
@@ -61,4 +63,3 @@ graph = Graph("{}:{}".format(os.environ['ID_MAPPER_API'], os.environ['ID_MAPPER_
 
 with Pool(processes=N_PROCESSES) as pool:
     pool.map(process_piece, [lines[i:i+N_LINES] for i in range(0, len(lines), N_LINES)])
-
