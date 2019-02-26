@@ -4,28 +4,36 @@
 [![Codecov](https://codecov.io/gh/DD-DeCaF/id-mapper/branch/master/graph/badge.svg)](https://codecov.io/gh/DD-DeCaF/id-mapper)
 [![DOI](https://zenodo.org/badge/80559780.svg)](https://zenodo.org/badge/latestdoi/80559780)
 
-Based on [MetaNetX](http://www.metanetx.org/). Information about metabolites and reactions is provided by [MNXref namespace](http://www.metanetx.org/mnxdoc/mnxref.html)
+Based on [MetaNetX](http://www.metanetx.org/). Information about metabolites and reactions is provided by [MNXref namespace](http://www.metanetx.org/mnxdoc/mnxref.html).
 
-Example on how to find a match for the chemical with [BIGG](https://github.com/biosustain/venom) id `nh3` in [BioPath](https://webapps.molecular-networks.com/biopath3/biopath3) database:
+An online API service endpoint can be found at https://api.dd-decaf.eu/id-mapper/query.
+
+Example on how to find a match for the chemical with [BIGG](http://bigg.ucsd.edu/) id `nh3` in [BioPath](https://webapps.molecular-networks.com/biopath3/biopath3) database:
 
 ```{python}
-import requests
-query = {'ids': ['atp'], 'db_from': 'bigg', 'db_to': 'kegg', 'type': 'Metabolite'}
-requests.post('http://localhost/id-mapper/query', json=query).json()
-```
-
-```
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 36
-Content-Type: application/json
-
-{'ids': {'atp': ['C00002', 'D08646']}}
+In [1]: import requests
+In [2]: query = {"ids": ["atp"], "db_from": "bigg", "db_to": "kegg", "type": "Metabolite"}
+In [3]: requests.post("http://localhost:8000/query", json=query).json()
+Out[3]: {"ids": {"atp": ["C00002", "D08646"]}}
 ```
 
 The graph consists of large amount of connected components. A connected component is considered being one object: a metabolite or a reaction. Search is returning all the elements in the component with `db_to` database name.
 ![graph](graph.png)
 
-# LICENSE
+## Development
+
+Download and load the chemical references into the graph database (may take several hours):
+
+```{bash}
+curl -o data/chem_xref.tsv https://www.metanetx.org/cgi-bin/mnxget/mnxref/chem_xref.tsv
+docker-compose run --rm web python src/load_chem_xref.py
+```
+
+Start the application:
+```{bash}
+docker-compose up
+```
+
+## License
 
 id-mapper is licensed under the Apache License Version 2.0 (see LICENSE in source directory).
