@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from id_mapper.graph import GRAPH, query_identifiers
-
 from py2neo import Node, Relationship
+
+from id_mapper.graph import GRAPH, query_identifiers
 
 
 elements = [
