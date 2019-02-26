@@ -12,27 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from id_mapper.graph import GRAPH, insert_pairs, query_identifiers
-from id_mapper.metanetx import Pair
+from id_mapper.graph import GRAPH, query_identifiers
+
+from py2neo import Node, Relationship
 
 
 elements = [
-    (Pair('A', 'x'), Pair('B', 'y')),
-    (Pair('C', 'z'), Pair('B', 'y')),
-    (Pair('B', 'z'), Pair('C', 'z')),
+    (Node("Metabolite", id="A", db_name="x"), Node("Metabolite", id="B", db_name="y")),
+    (Node("Metabolite", id="C", db_name="z"), Node("Metabolite", id="B", db_name="y")),
+    (Node("Metabolite", id="B", db_name="z"), Node("Metabolite", id="C", db_name="z")),
 ]
 
 
+def _insert_pairs(node1, node2):
+    GRAPH.merge(node1)
+    GRAPH.merge(node2)
+    GRAPH.merge(Relationship(node1, "IS", node2))
+    GRAPH.merge(Relationship(node2, "IS", node1))
+
+
 def test_insert_pairs(app):
-    insert_pairs('Metabolite', *elements[0])
-    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 2
-    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 2
-    insert_pairs('Metabolite', *elements[1])
-    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 3
-    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 4
-    insert_pairs('Metabolite', *elements[2])
-    assert GRAPH.dbms.primitive_counts['NumberOfNodeIdsInUse'] == 4
-    assert GRAPH.dbms.primitive_counts['NumberOfRelationshipIdsInUse'] == 6
-    assert query_identifiers('Metabolite', 'C', 'z', 'y')['C'] == ['B']
-    assert 'B' not in query_identifiers('Metabolite', 'N', 'z', 'y')
+    _insert_pairs(*elements[0])
+    assert GRAPH.dbms.primitive_counts["NumberOfNodeIdsInUse"] == 2
+    assert GRAPH.dbms.primitive_counts["NumberOfRelationshipIdsInUse"] == 2
+    _insert_pairs(*elements[1])
+    assert GRAPH.dbms.primitive_counts["NumberOfNodeIdsInUse"] == 3
+    assert GRAPH.dbms.primitive_counts["NumberOfRelationshipIdsInUse"] == 4
+    _insert_pairs(*elements[2])
+    assert GRAPH.dbms.primitive_counts["NumberOfNodeIdsInUse"] == 4
+    assert GRAPH.dbms.primitive_counts["NumberOfRelationshipIdsInUse"] == 6
+    assert query_identifiers("Metabolite", "C", "z", "y")["C"] == ["B"]
+    assert "B" not in query_identifiers("Metabolite", "N", "z", "y")
     GRAPH.delete_all()
