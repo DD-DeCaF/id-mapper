@@ -21,7 +21,6 @@ https://www.metanetx.org/mnxdoc/mnxref.html.
 
 import os
 import time
-from collections import namedtuple
 
 from py2neo import Graph, Node, Relationship
 from py2neo.packages.httpstream.http import SocketError
@@ -44,7 +43,6 @@ while not connected:
         time.sleep(2)
 
 print("Reading and parsing 'chem_xref.tsv'")
-Ref = namedtuple("Ref", ["id", "db", "mnx_id"])
 references = []
 with open("chem_xref.tsv") as file_:
     lines = file_.readlines()
