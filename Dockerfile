@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM dddecaf/wsgi-base:master
+FROM dddecaf/wsgi-base:alpine
 
 ENV APP_USER=giraffe
 
@@ -31,19 +31,9 @@ WORKDIR "${CWD}"
 # py2neo dependencies
 RUN apk add --no-cache g++ libffi-dev openssl-dev
 
-COPY requirements.in dev-requirements.in ./
+COPY requirements ./requirements
 
-# `wsgi-requirements.txt` comes from the parent image and needs to be part of
-# the `pip-sync` command otherwise those dependencies are removed.
-RUN set -eux \
-    && pip-compile --generate-hashes \
-        --output-file dev-requirements.txt dev-requirements.in \
-    && pip-compile --generate-hashes \
-        --output-file requirements.txt requirements.in \
-    && pip-sync /opt/wsgi-requirements.txt \
-        dev-requirements.txt \
-        requirements.txt \
-    && rm -rf /root/.cache/pip
+RUN pip-sync requirements/requirements.txt
 
 COPY . "${CWD}/"
 
