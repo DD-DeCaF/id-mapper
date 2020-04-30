@@ -59,7 +59,6 @@ spec:
             secretKeyRef:
               name: id-mapper-production
               key: ID_MAPPER_PASSWORD
-        command: ["gunicorn", "-c", "gunicorn.py", "id_mapper.wsgi:app"]
         readinessProbe:
           httpGet:
             path: /id-mapper/healthz

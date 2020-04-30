@@ -4,6 +4,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - BASE_TAG=${BASE_TAG}
+        - BUILD_COMMIT=${BUILD_COMMIT:-unknown}
+        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-unknown}
     image: gcr.io/dd-decaf-cfbf6/id-mapper:${IMAGE_TAG:-latest}
     networks:
       default:
@@ -26,7 +30,6 @@ services:
       - ID_MAPPER_PORT=${ID_MAPPER_PORT:-7474}
       - ID_MAPPER_PASSWORD=${ID_MAPPER_PASSWORD:-1}
       - ID_MAPPER_USER=${ID_MAPPER_USER:-neo4j}
-    command: gunicorn -c gunicorn.py id_mapper.wsgi:app
 
   db:
     image: neo4j:3.1

@@ -1,5 +1,5 @@
-sudo: required
-language: minimal
+os: linux
+language: shell
 
 git:
   depth: 2
@@ -10,35 +10,37 @@ branches:
   - devel
 
 services:
-  - docker
+- docker
 
 env:
   global:
-    - IMAGE_REPO=gcr.io/dd-decaf-cfbf6/id-mapper
-    - IMAGE_TAG=${TRAVIS_BRANCH}
-    - IMAGE=${IMAGE_REPO}:${IMAGE_TAG}
+  - IMAGE=gcr.io/dd-decaf-cfbf6/id-mapper
+  - BRANCH=${TRAVIS_BRANCH}
+  - BUILD_COMMIT=${TRAVIS_COMMIT}
+  - SHORT_COMMIT=${TRAVIS_COMMIT:0:7}
+  - BUILD_TIMESTAMP=$(date --utc --iso-8601=seconds)
+  - BUILD_DATE=$(date --utc --iso-8601=date)
+  - BUILD_TAG=${BRANCH}_${BUILD_DATE}_${SHORT_COMMIT}
+
+before_install:
+- make setup
 
 install:
-  - docker build -t ${IMAGE_REPO}:${TRAVIS_COMMIT::12} -t ${IMAGE_REPO}:${TRAVIS_BRANCH} .
-  - make setup
+- make build-travis
+- make build
+- make start
 
 script:
-  # Flake8 temporarily disabled until service is refreshed
-  # - make flake8
-  - make isort
-  - make license
-  - make safety
-  - make test-travis
-  - # Run the tests and report coverage (see https://docs.codecov.io/docs/testing-with-docker).
-  - mkdir --parents /tmp/coverage
-  - docker-compose run --rm -e ENVIRONMENT=testing -v "/tmp/coverage:/tmp/coverage" web pytest --cov-report "xml:/tmp/coverage/coverage.xml" --cov-report term --cov=src/id_mapper
-  - bash <(curl -s https://codecov.io/bash) -f "/tmp/coverage/coverage.xml"
+- make style
+- make safety
+# Run the tests and report coverage (see https://docs.codecov.io/docs/testing-with-docker).
+- docker-compose exec -e ENVIRONMENT=testing web pytest --cov=id_mapper --cov-report=term --cov-report=xml
+- bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
-  - ./scripts/install_gcloud.sh
-  - ./scripts/install_kubectl.sh
-  - docker push ${IMAGE_REPO}:${TRAVIS_COMMIT::12}
-  - docker push ${IMAGE_REPO}:${TRAVIS_BRANCH}
+- ./scripts/install_gcloud.sh
+- ./scripts/install_kubectl.sh
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then make push; fi
 
 deploy:
   provider: script
