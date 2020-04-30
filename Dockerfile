@@ -38,7 +38,7 @@ COPY requirements ./requirements/
 
 RUN set -eux \
     # Add py2neo build dependencies.
-    && apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev \
+    && apk add --no-cache --virtual .build-deps build-base libffi-dev openssl-dev \
     && pip install -r requirements/requirements.txt \
     # Remove build dependencies to reduce layer size.
     && rm -rf /root/.cache/pip \
