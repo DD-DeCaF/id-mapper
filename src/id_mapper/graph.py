@@ -44,18 +44,22 @@ while not connected:
 def query_identifiers(
     object_type, object_ids, db_from, db_to, max_separation=3
 ):
-    """Return id for given metabolite from the corresponding database
+    """Return id for given metabolite from the corresponding database.
 
-    :param object_type: The type of the object, e.g. Metabolite, Gene or Reaction.
+    :param object_type: The type of the object, e.g. Metabolite, Gene or
+        Reaction.
     :param object_ids: list of identifiers
     :param db_from: database name, f.e "bigg"
     :param db_to: database name, f.e "mnx"
-    :param max_separation: max degree of separation to search. Decided by link structure, at time of writing we don't
-    expect degree separation more than 3
+    :param max_separation: max degree of separation to search. Decided by link
+        structure, at time of writing we don't expect degree separation more
+        than 3.
     :return:
     """
     query = """MATCH (n:{object_type})-[:IS*..{separation}]->(b:{object_type})
-             WHERE n.db_name = {{db_from}} AND b.db_name = {{db_to}} AND n.id IN {{identifiers}}
+             WHERE n.db_name = {{db_from}}
+             AND b.db_name = {{db_to}}
+             AND n.id IN {{identifiers}}
              RETURN n.id AS from, collect(distinct b.id) AS to""".format(
         separation=int(max_separation), object_type=object_type
     )  # possible to parametrize with cypher?

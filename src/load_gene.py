@@ -52,7 +52,7 @@ def process_piece(chunk):
                 to_delete.append(key)
             else:
                 info[key] = info[key].strip("'; ").strip()
-                info[key] = re.sub("\(\w\.\w\.\)", "", info[key])
+                info[key] = re.sub(r"\(\w\.\w\.\)", "", info[key])
         for key in to_delete:
             info.pop(key)
         info["name"] = [info["name"]]

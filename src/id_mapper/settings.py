@@ -83,7 +83,7 @@ class Default:
                 # hence be very verbose). To silence spammy/uninteresting log
                 # output, add the loggers here and increase the loglevel.
             },
-            "root": {"level": "DEBUG", "handlers": ["console"],},
+            "root": {"level": "DEBUG", "handlers": ["console"]},
         }
 
 
