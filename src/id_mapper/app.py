@@ -32,19 +32,24 @@ app = Flask(__name__)
 def init_app(application):
     """Initialize the main app with config information and routes."""
     from id_mapper.settings import current_config
+
     application.config.from_object(current_config())
 
     # Configure logging
-    logging.config.dictConfig(application.config['LOGGING'])
+    logging.config.dictConfig(application.config["LOGGING"])
 
     # Configure Sentry
-    if application.config['SENTRY_DSN']:
-        sentry = Sentry(dsn=application.config['SENTRY_DSN'], logging=True,
-                        level=logging.ERROR)
+    if application.config["SENTRY_DSN"]:
+        sentry = Sentry(
+            dsn=application.config["SENTRY_DSN"],
+            logging=True,
+            level=logging.ERROR,
+        )
         sentry.init_app(application)
 
     # Add routes and resources.
     from id_mapper import resources
+
     resources.init_app(application)
 
     # Add CORS information for all resources.

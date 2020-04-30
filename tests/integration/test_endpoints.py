@@ -25,6 +25,8 @@ def test_docs(client):
 
 def test_query(client):
     """Expect the example endpoint to echo provided name."""
-    resp = client.post("/query", json={'ids': [], 'db_from': "", 'db_to': "",
-                                       'type': "Metabolite"})
+    resp = client.post(
+        "/query",
+        json={"ids": [], "db_from": "", "db_to": "", "type": "Metabolite"},
+    )
     assert resp.status_code == 200

@@ -25,8 +25,8 @@ from .schemas import Query, Response
 def init_app(app):
     """Register API resources on the provided Flask application."""
     docs = FlaskApiSpec(app)
-    app.add_url_rule('/healthz', view_func=healthz)
-    app.add_url_rule('/query', view_func=query, methods=['POST'])
+    app.add_url_rule("/healthz", view_func=healthz)
+    app.add_url_rule("/query", view_func=query, methods=["POST"])
     docs.register(query, endpoint=query.__name__)
 
 
@@ -41,14 +41,18 @@ def healthz():
     return ""
 
 
-@doc(description="Query entity by list of identifiers and a database name to "
-                 "get all the matching identifiers from another database")
+@doc(
+    description="Query entity by list of identifiers and a database name to "
+    "get all the matching identifiers from another database"
+)
 @use_kwargs(Query)
 @marshal_with(Response, code=200)
 def query(ids, type, db_from, db_to):
-    return {'ids': query_identifiers(
-        object_type=type,
-        object_ids=list(ids),
-        db_from=db_from,
-        db_to=db_to,
-    )}
+    return {
+        "ids": query_identifiers(
+            object_type=type,
+            object_ids=list(ids),
+            db_from=db_from,
+            db_to=db_to,
+        )
+    }

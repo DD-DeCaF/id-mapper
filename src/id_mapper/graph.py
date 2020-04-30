@@ -26,20 +26,24 @@ connected = False
 while not connected:
     try:
         GRAPH = Graph(
-            os.environ['ID_MAPPER_API'],
-            http_port=int(os.environ['ID_MAPPER_PORT']),
-            user=os.environ['ID_MAPPER_USER'],
-            password=os.environ['ID_MAPPER_PASSWORD'],
+            os.environ["ID_MAPPER_API"],
+            http_port=int(os.environ["ID_MAPPER_PORT"]),
+            user=os.environ["ID_MAPPER_USER"],
+            password=os.environ["ID_MAPPER_PASSWORD"],
         )
         logger.info("Connected to graph db")
         connected = True
     except SocketError as error:
-        logger.info(f"{str(error)}: Could not connect to database, retrying in "
-                    "5 seconds...")
+        logger.info(
+            f"{str(error)}: Could not connect to database, retrying in "
+            "5 seconds..."
+        )
         time.sleep(5)
 
 
-def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3):
+def query_identifiers(
+    object_type, object_ids, db_from, db_to, max_separation=3
+):
     """Return id for given metabolite from the corresponding database
 
     :param object_type: The type of the object, e.g. Metabolite, Gene or Reaction.
@@ -50,13 +54,20 @@ def query_identifiers(object_type, object_ids, db_from, db_to, max_separation=3)
     expect degree separation more than 3
     :return:
     """
-    query = ("""MATCH (n:{object_type})-[:IS*..{separation}]->(b:{object_type})
+    query = """MATCH (n:{object_type})-[:IS*..{separation}]->(b:{object_type})
              WHERE n.db_name = {{db_from}} AND b.db_name = {{db_to}} AND n.id IN {{identifiers}}
-             RETURN n.id AS from, collect(distinct b.id) AS to"""
-             .format(separation=int(max_separation),
-                     object_type=object_type))  # possible to parametrize with cypher?
+             RETURN n.id AS from, collect(distinct b.id) AS to""".format(
+        separation=int(max_separation), object_type=object_type
+    )  # possible to parametrize with cypher?
 
     logger.info(query)
-    data = GRAPH.data(query, parameters={'identifiers': object_ids, 'db_from': db_from, 'db_to': db_to})
-    result = {item['from']: item['to'] for item in data}
+    data = GRAPH.data(
+        query,
+        parameters={
+            "identifiers": object_ids,
+            "db_from": db_from,
+            "db_to": db_to,
+        },
+    )
+    result = {item["from"]: item["to"] for item in data}
     return result
