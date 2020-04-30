@@ -32,10 +32,10 @@ connected = False
 while not connected:
     try:
         graph = Graph(
-            os.environ['ID_MAPPER_API'],
-            http_port=int(os.environ['ID_MAPPER_PORT']),
-            user=os.environ['ID_MAPPER_USER'],
-            password=os.environ['ID_MAPPER_PASSWORD'],
+            os.environ["ID_MAPPER_API"],
+            http_port=int(os.environ["ID_MAPPER_PORT"]),
+            user=os.environ["ID_MAPPER_USER"],
+            password=os.environ["ID_MAPPER_PASSWORD"],
         )
         connected = True
     except SocketError:
@@ -56,15 +56,17 @@ for line in tqdm(lines, mininterval=0.2):
     if ":" not in xref:
         continue
 
-    xref_db, xref_id = xref.split(':', maxsplit=1)
+    xref_db, xref_id = xref.split(":", maxsplit=1)
 
     if xref_id == mnx_id:
         continue
 
-    references.append((
-        Node("Metabolite", id=xref_id, db_name=xref_db),
-        Node("Metabolite", id=mnx_id, db_name="mnx"),
-    ))
+    references.append(
+        (
+            Node("Metabolite", id=xref_id, db_name=xref_db),
+            Node("Metabolite", id=mnx_id, db_name="mnx"),
+        )
+    )
 
 print(f"Loaded {len(references)} cross-references")
 print(f"Starting database inserts. This may take several hours.")
