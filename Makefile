@@ -8,8 +8,9 @@ IMAGE ?= gcr.io/dd-decaf-cfbf6/id-mapper
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 BUILD_COMMIT ?= $(shell git rev-parse HEAD)
 SHORT_COMMIT ?= $(shell git rev-parse --short HEAD)
-BUILD_TIMESTAMP ?= $(shell date --utc --iso-8601=seconds)
-BUILD_DATE ?= $(shell date --utc --iso-8601=date)
+# Full timestamp in UTC. Format corresponds to ISO-8601 but Unix compatible.
+BUILD_TIMESTAMP ?= $(shell date -u +%Y-%m-%dT%T+00:00)
+BUILD_DATE ?= $(shell date -u +%Y-%m-%d)
 BUILD_TAG ?= ${BRANCH}_${BUILD_DATE}_${SHORT_COMMIT}
 
 ################################################################################

@@ -18,16 +18,16 @@ env:
   - BRANCH=${TRAVIS_BRANCH}
   - BUILD_COMMIT=${TRAVIS_COMMIT}
   - SHORT_COMMIT=${TRAVIS_COMMIT:0:7}
-  - BUILD_TIMESTAMP=$(date --utc --iso-8601=seconds)
-  - BUILD_DATE=$(date --utc --iso-8601=date)
+  - BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%T+00:00)
+  - BUILD_DATE=$(date -u +%Y-%m-%d)
   - BUILD_TAG=${BRANCH}_${BUILD_DATE}_${SHORT_COMMIT}
 
 before_install:
 - make setup
 
 install:
-- make build-travis
 - make build
+- make build-travis
 - make start
 
 script:
