@@ -5,10 +5,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - BASE_TAG=${BASE_TAG}
+        - BASE_TAG=${BASE_TAG:-alpine}
         - BUILD_COMMIT=${BUILD_COMMIT:-unknown}
-        - BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-unknown}
-    image: gcr.io/dd-decaf-cfbf6/id-mapper:${IMAGE_TAG:-latest}
+    image: gcr.io/dd-decaf-cfbf6/id-mapper:${BUILD_TAG:-latest}
     networks:
       default:
       DD-DeCaF:

@@ -8,8 +8,6 @@ IMAGE ?= gcr.io/dd-decaf-cfbf6/id-mapper
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 BUILD_COMMIT ?= $(shell git rev-parse HEAD)
 SHORT_COMMIT ?= $(shell git rev-parse --short HEAD)
-# Full timestamp in UTC. Format corresponds to ISO-8601 but Unix compatible.
-BUILD_TIMESTAMP ?= $(shell date -u +%Y-%m-%dT%T+00:00)
 BUILD_DATE ?= $(shell date -u +%Y-%m-%d)
 BUILD_TAG ?= ${BRANCH}_${BUILD_DATE}_${SHORT_COMMIT}
 
@@ -28,7 +26,7 @@ setup: network
 ## Generate the compiled requirements files.
 lock:
 	docker pull dddecaf/tag-spy:latest
-	$(eval LATEST_BASE_TAG := $(shell docker run --rm dddecaf/tag-spy:latest tag-spy dddecaf/wsgi-base alpine dk.dtu.biosustain.wsgi-base.alpine.build.timestamp))
+	$(eval LATEST_BASE_TAG := $(shell docker run --rm dddecaf/tag-spy:latest tag-spy dddecaf/wsgi-base alpine))
 	$(file >LATEST_BASE_TAG, $(LATEST_BASE_TAG))
 	$(eval COMPILER_TAG := $(subst alpine,alpine-compiler,$(LATEST_BASE_TAG)))
 	$(info ************************************************************)
@@ -57,9 +55,9 @@ build-travis:
 	$(info * depend on a later version.)
 	$(info ************************************************************)
 	docker pull dddecaf/wsgi-base:$(LATEST_BASE_TAG)
-	docker build --build-arg BASE_TAG=$(LATEST_BASE_TAG) \
+	docker build \
+		--build-arg BASE_TAG=$(LATEST_BASE_TAG) \
 		--build-arg BUILD_COMMIT=$(BUILD_COMMIT) \
-		--build-arg BUILD_TIMESTAMP=$(BUILD_TIMESTAMP) \
 		--tag $(IMAGE):$(BRANCH) \
 		--tag $(IMAGE):$(BUILD_TAG) \
 		.
