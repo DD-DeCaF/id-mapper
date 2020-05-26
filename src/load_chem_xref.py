@@ -39,7 +39,7 @@ while not connected:
         )
         connected = True
     except SocketError:
-        print(f"Could not connect to database, retrying in 2 seconds...")
+        print("Could not connect to database, retrying in 2 seconds...")
         time.sleep(2)
 
 print("Reading and parsing 'chem_xref.tsv'")
@@ -69,7 +69,7 @@ for line in tqdm(lines, mininterval=0.2):
     )
 
 print(f"Loaded {len(references)} cross-references")
-print(f"Starting database inserts. This may take several hours.")
+print("Starting database inserts. This may take several hours.")
 
 for ref in tqdm(references, mininterval=0.2):
     xref_node, mnx_node = ref
