@@ -34,6 +34,12 @@ Start the application:
 docker-compose up
 ```
 
+### Updating Python dependencies
+
+To compile a new requirements file and then re-build the service with the new requirements, run:
+
+    make pip-compile build
+
 ## License
 
 id-mapper is licensed under the Apache License Version 2.0 (see LICENSE in source directory).

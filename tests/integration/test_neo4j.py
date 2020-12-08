@@ -18,9 +18,18 @@ from id_mapper.graph import GRAPH, query_identifiers
 
 
 elements = [
-    (Node("Metabolite", id="A", db_name="x"), Node("Metabolite", id="B", db_name="y")),
-    (Node("Metabolite", id="C", db_name="z"), Node("Metabolite", id="B", db_name="y")),
-    (Node("Metabolite", id="B", db_name="z"), Node("Metabolite", id="C", db_name="z")),
+    (
+        Node("Metabolite", id="A", db_name="x"),
+        Node("Metabolite", id="B", db_name="y"),
+    ),
+    (
+        Node("Metabolite", id="C", db_name="z"),
+        Node("Metabolite", id="B", db_name="y"),
+    ),
+    (
+        Node("Metabolite", id="B", db_name="z"),
+        Node("Metabolite", id="C", db_name="z"),
+    ),
 ]
 
 

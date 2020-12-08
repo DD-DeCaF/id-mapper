@@ -1,0 +1,8 @@
+# Maintain exact constraints from the base image.
+-r /opt/base-requirements.txt
+
+# Place any service-specific requirements or constraints here. If an addition
+# here could benefit all our microservices, consider adding them to `wsgi-base`
+# instead.
+py2neo==3.1.2
+tqdm

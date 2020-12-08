@@ -59,7 +59,6 @@ spec:
             secretKeyRef:
               name: id-mapper-production
               key: ID_MAPPER_PASSWORD
-        command: ["gunicorn", "-c", "gunicorn.py", "id_mapper.wsgi:app"]
         readinessProbe:
           httpGet:
             path: /id-mapper/healthz
@@ -67,7 +66,7 @@ spec:
           initialDelaySeconds: 5
         resources:
           requests:
-            cpu: "10m"
+            cpu: "1m"
           limits:
             cpu: "2000m"
       - name: db
@@ -83,7 +82,7 @@ spec:
               key: NEO4J_AUTH
         resources:
           requests:
-            cpu: "10m"
+            cpu: "1m"
           limits:
             cpu: "2000m"
         volumeMounts:
