@@ -15,7 +15,7 @@
 
 ARG BASE_TAG=alpine
 
-FROM dddecaf/wsgi-base:${BASE_TAG}
+FROM dddecaf/wsgi-base:alpine
 
 ARG BASE_TAG=alpine
 ARG BUILD_COMMIT
@@ -36,7 +36,10 @@ COPY requirements ./requirements/
 
 RUN set -eux \
     # Add py2neo build dependencies.
-    && apk add --no-cache --virtual .build-deps build-base libffi-dev openssl-dev \
+    && apk add --no-cache --virtual .build-deps build-base libffi-dev openssl-dev rustup \
+		# this installs rust components and makes available in the PATH (for py2neo)
+		&& rustup-init -y \
+		&& source $HOME/.cargo/env \
     && pip install -r requirements/requirements.txt \
     # Remove build dependencies to reduce layer size.
     && rm -rf /root/.cache/pip \

@@ -4,5 +4,5 @@
 # Place any service-specific requirements or constraints here. If an addition
 # here could benefit all our microservices, consider adding them to `wsgi-base`
 # instead.
-py2neo==3.1.2
+py2neo==2021.1.5
 tqdm
